@@ -1,4 +1,3 @@
-const domain = 'ismailsancar.com'; // Backend domain'i
 
 function toggleMenu() {
     const menu = document.getElementById("mySidemenu");
