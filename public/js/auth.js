@@ -1,4 +1,3 @@
-const domain = 'app.ismailsancar.com'; // Backend domain'i
 
 document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault();

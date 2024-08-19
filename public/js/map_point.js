@@ -1,5 +1,5 @@
 let selectedLatLng;
-const domain = 'app.ismailsancar.com'; // Backend domain'i
+const domain = 'ismailsancar.com'; // Backend domain'i
 
 // Modal'ı kapatma
 document.querySelector('.close').onclick = function () {

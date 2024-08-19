@@ -1,7 +1,7 @@
 let socket;
 var map;  // Global olarak map tanımla
 var user; // Global olarak user tanımla
-const domain = 'app.ismailsancar.com'; // Backend domain'i
+const domain = 'ismailsancar.com'; // Backend domain'i
 
 function initializeMap() {
     map = L.map('map').setView([51.505, -0.09], 13); // Varsayılan konum (Londra)
