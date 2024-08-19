@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyApp - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('/images/background.png') no-repeat center center fixed;
+            /* Arka plan resmi */
+            background-size: cover;
+            /* Resmin tüm ekrana yayılmasını sağlar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div class="signup-link">
+            <p>Don't have an account?</p>
+            <a href="signup.html">Sign Up</a>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde çalışır
+        document.addEventListener('DOMContentLoaded', function () {
+            const accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+
+            // Eğer accessToken ve refreshToken varsa, ana sayfaya yönlendir
+            if (accessToken && refreshToken) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+    <script src="js/map.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

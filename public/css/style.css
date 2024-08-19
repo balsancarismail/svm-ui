@@ -1,0 +1,154 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.5s ease; /* Menü açıldığında sağa kaydırma için geçiş efekti */
+}
+
+.navbar {
+    background: linear-gradient(90deg, #ffffff, #ffe680);
+    color: black;
+    padding: 20px 30px;
+    text-align: center;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 70px;
+    position: relative;
+}
+
+.navbar .brand {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-right: 50px;
+    color: #333;
+}
+
+.navbar a {
+    color: black;
+    padding: 14px 20px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.navbar a:hover {
+    background-color: #ffcc00;
+    color: black;
+    border-radius: 4px;
+}
+
+.navbar a:active {
+    background-color: #ffb300;
+    color: black;
+    border-radius: 4px;
+}
+
+.footer {
+    background: linear-gradient(90deg, #ffffff, #ffe680);
+    color: black;
+    text-align: center;
+    padding: 20px 30px;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70px;
+    position: relative;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 5px;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #0056b3;
+}
+
+.footer a:active {
+    color: #003a75;
+}
+
+.side-menu {
+    height: 100%;
+    width: 250px; /* Menü genişliği */
+    position: fixed;
+    left: -250px; /* Menü başlangıçta görünmesin, solda saklı */
+    top: 0;
+    background: linear-gradient(to bottom, #ffffff, #ffe680 50%, #ffe680 50%, #ffffff); /* Yukarıdan aşağıya doğru geçiş */
+    overflow-x: hidden;
+    transition: left 0.5s ease; /* Menü açıldığında kayma efekti */
+    padding-top: 60px;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.side-menu a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: black;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.side-menu a:hover {
+    color: #ffb300;
+}
+
+.side-menu .close-btn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    color: black;
+}
+
+.side-menu .close-btn:hover {
+    color: #ffb300;
+}
+
+#map-container {
+    flex: 1;
+    margin-top: 70px;
+    margin-bottom: 70px;
+    max-width: 1200px;
+    width: 90%;
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
