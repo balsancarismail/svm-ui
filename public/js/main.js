@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Logout işlemi
     document.getElementById('logoutButton').addEventListener('click', async function () {
         const refreshToken = localStorage.getItem('refreshToken');
-        const url = `https://${domain}/api/users/logout`;
+        const url = `https://${domain}/api/logout`;
 
         const response = await fetch(url, {
             method: 'POST',
