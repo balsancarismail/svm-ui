@@ -12,6 +12,44 @@ function toggleMenu() {
     }
 }
 
+function searchFriends() {
+    const input = document.getElementById('friendSearchInput').value.toLowerCase();
+    const resultsContainer = document.getElementById('friendSearchResults');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    // Clear previous results
+    resultsContainer.innerHTML = '';
+
+    if (input === '') {
+        return;
+    }
+
+    const filteredFriends = user.friends.filter(friend => friend.name.toLowerCase().includes(input));
+
+    if (filteredFriends.length === 0) {
+        resultsContainer.innerHTML = '<li>No friends found</li>';
+        return;
+    }
+
+    filteredFriends.forEach(friend => {
+        const li = document.createElement('li');
+        li.textContent = friend.name; // Display the friend's name
+        li.addEventListener('click', function () {
+            focusOnFriend(friend); // Function to focus map on friend's location
+        });
+        resultsContainer.appendChild(li);
+    });
+}
+
+function focusOnFriend(friend) {
+    if (friend.lat && friend.lng) {
+        map.setView([friend.lat, friend.lng], 13); // Focus the map on the friend's location
+        L.marker([friend.lat, friend.lng], { icon: locationIcon }).addTo(map) // Use the location icon
+            .bindPopup(`${friend.name} is here!`)
+            .openPopup();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Map script loaded'); // Kontrol amaçlı log
 
