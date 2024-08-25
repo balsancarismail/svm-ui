@@ -38,19 +38,6 @@
             <a href="signup.html">Sign Up</a>
         </div>
     </div>
-
-    <script>
-        // Sayfa yüklendiğinde çalışır
-        document.addEventListener('DOMContentLoaded', function () {
-            const accessToken = localStorage.getItem('accessToken');
-            const refreshToken = localStorage.getItem('refreshToken');
-
-            // Eğer accessToken ve refreshToken varsa, ana sayfaya yönlendir
-            if (accessToken && refreshToken) {
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
     <script src="js/map.js"></script>
     <script src="js/auth.js"></script>
 </body>
