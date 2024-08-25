@@ -1,3 +1,5 @@
+const domain = 'ismailsancar.com'; // Backend domain'i
+
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('signupForm').addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -9,7 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+            },
             body: JSON.stringify({ name, email, password })
         });
 
