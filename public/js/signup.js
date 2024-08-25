@@ -7,13 +7,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const url = `https://${domain}/api/users`;
+        const url = `https://${domain}/api/register`;
 
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
             },
             body: JSON.stringify({ name, email, password })
         });
