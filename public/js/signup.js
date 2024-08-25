@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Geolocation desteklenmiyorsa 0.0 olarak gönder
                 await sendLoginRequest(url, email, password, lat, lng);
             }
-            window.location.href = 'index.html';
         } else {
             alert('Sign up failed!');
         }
