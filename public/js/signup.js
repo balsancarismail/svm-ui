@@ -18,7 +18,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (response.ok) {
-            window.location.href = 'login.html';
+            const url = `https://${domain}/api/login`;
+
+            // Konum bilgilerini al
+            let lat = 0.0;
+            let lng = 0.0;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function (position) {
+                    lat = position.coords.latitude;
+                    lng = position.coords.longitude;
+
+                    // Konum bilgileriyle birlikte login isteği gönder
+                    await sendLoginRequest(url, email, password, lat, lng);
+                }, async function (error) {
+                    console.error('Error getting location:', error);
+                    // Konum alınamazsa 0.0 olarak gönder
+                    await sendLoginRequest(url, email, password, lat, lng);
+                });
+            } else {
+                // Geolocation desteklenmiyorsa 0.0 olarak gönder
+                await sendLoginRequest(url, email, password, lat, lng);
+            }
+            window.location.href = 'index.html';
         } else {
             alert('Sign up failed!');
         }
