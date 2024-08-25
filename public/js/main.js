@@ -24,7 +24,7 @@ function searchFriends() {
         return;
     }
 
-    const filteredFriends = user.friends.filter(friend => friend.name.toLowerCase().includes(input));
+    const filteredFriends = user.friends.filter(friend => friend.toLowerCase().includes(input));
 
     if (filteredFriends.length === 0) {
         resultsContainer.innerHTML = '<li>No friends found</li>';
@@ -189,4 +189,21 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Creating an area requires at least 3 locations.');
         }
     });
+
+    document.getElementById('searchFriendsLink').addEventListener('click', function () {
+        const searchContainer = document.getElementById('searchFriendsContainer');
+        if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
+            searchContainer.style.display = 'block';
+        } else {
+            searchContainer.style.display = 'none';
+        }
+    });
+
+    // Close search when clicking outside
+    window.onclick = function (event) {
+        const searchContainer = document.getElementById('searchFriendsContainer');
+        if (event.target === searchContainer) {
+            searchContainer.style.display = 'none';
+        }
+    }
 });
