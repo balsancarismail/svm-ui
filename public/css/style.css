@@ -92,7 +92,6 @@ body {
 .footer a:active {
     color: #003a75;
 }
-
 .side-menu {
     height: 100%;
     width: 250px; /* Menü genişliği */
@@ -108,16 +107,19 @@ body {
 }
 
 .side-menu a {
-    padding: 8px 8px 8px 32px;
+    padding: 12px 32px; /* Menü elemanları arasındaki boşluğu artır */
+    margin: 10px 0; /* Menü elemanları arasında dikey boşluk */
     text-decoration: none;
-    font-size: 25px;
+    font-size: 20px; /* Yazı boyutunu biraz küçült */
     color: black;
     display: block;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    border-radius: 4px; /* Hafif yuvarlatılmış köşeler */
 }
 
 .side-menu a:hover {
     color: #ffb300;
+    background-color: rgba(0, 0, 0, 0.1); /* Hover olduğunda arka plan rengi */
 }
 
 .side-menu .close-btn {
