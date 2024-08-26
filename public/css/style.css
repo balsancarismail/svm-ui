@@ -172,7 +172,6 @@ body {
 /* Input Field */
 #friendSearchInput {
     width: 100%;
-    padding: 12px;
     border-radius: 6px;
     border: 1px solid #ddd;
     margin-bottom: 15px;
