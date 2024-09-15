@@ -1,24 +1,52 @@
-document.getElementById('profileForm').addEventListener('submit', function(event) {
+document.getElementById('profileForm').addEventListener('submit', async function(event) {
     event.preventDefault();
 
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        confirmPassword: document.getElementById('confirm-password').value
+    };
 
-    // Basic validation (optional)
-    if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        return;
+    if (!validateForm(formData)) return;
+
+    try {
+        await updateProfile(formData);
+        displaySuccessMessage('Profile updated successfully!');
+    } catch (error) {
+        displayErrorMessage(error.message);
     }
+});
 
-    // Send data to the server or handle form submission
-    console.log({
-        name: name,
-        email: email,
-        password: password
+function validateForm(formData) {
+    if (formData.password !== formData.confirmPassword) {
+        displayErrorMessage('Passwords do not match!');
+        return false;
+    }
+    return true;
+}
+
+async function updateProfile(formData) {
+    const response = await fetch(`https://${domain}/api/update-profile`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        body: JSON.stringify(formData)
     });
 
-    // Example: Display a success message
-    alert('Profile updated successfully!');
-});
+    if (!response.ok) {
+        throw new Error('Failed to update profile');
+    }
+
+    return response.json();
+}
+
+function displaySuccessMessage(message) {
+    alert(message);
+}
+
+function displayErrorMessage(message) {
+    alert(message);
+}

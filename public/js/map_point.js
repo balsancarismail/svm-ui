@@ -1,58 +1,75 @@
 let selectedLatLng;
 
-// Modal'ı kapatma
-document.querySelector('.close').onclick = function () {
+const closeModal = () => {
     document.getElementById('locationModal').style.display = 'none';
 };
 
-// Kullanıcı "Yes" butonuna tıklarsa
-document.getElementById('confirmButton').onclick = function () {
-    document.getElementById('locationModal').style.display = 'none';
+const sendLocationToBackend = async (locationData) => {
+    const url = `https://${domain}/api/users/location`;
+    const accessToken = localStorage.getItem('accessToken');
 
-    // Konumu backend'e gönderme
-    const userId = JSON.parse(localStorage.getItem('user')).id;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(locationData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save location');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
+
+const updateUserLocations = (newLocation) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    user.locations.push(newLocation);
+    localStorage.setItem('user', JSON.stringify(user));
+};
+
+const addMarkerToMap = (latLng) => {
+    const customIcon = L.icon({
+        iconUrl: 'images/dest_icon.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    });
+
+    L.marker(latLng, { icon: customIcon })
+        .addTo(map)
+        .bindPopup("You marked this location!")
+        .openPopup();
+};
+
+document.querySelector('.close').onclick = closeModal;
+
+document.getElementById('confirmButton').onclick = async function () {
+    closeModal();
+
+    const user = JSON.parse(localStorage.getItem('user'));
     const locationData = {
-        user_id: userId,
+        user_id: user.id,
         latitude: parseFloat(selectedLatLng.lat.toFixed(6)),
         longitude: parseFloat(selectedLatLng.lng.toFixed(6))
     };
-    body = JSON.stringify(locationData);
-    access_token = `Bearer ${localStorage.getItem('accessToken')}`
 
-    const url = `https://${domain}/api/users/location`;
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': access_token
-        },
-        body: body
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data) {
-
-                //user' ın konumlarına yeni konumu ekleme
-                user = JSON.parse(localStorage.getItem('user'));
-                user.locations.push(locationData);
-                localStorage.setItem('user', JSON.stringify(user));
-
-                var customIcon = L.icon({
-                    iconUrl: 'images/dest_icon.png', // Özel ikonun yolu
-                    iconSize: [40, 40], // İkon boyutu
-                    iconAnchor: [20, 40], // İkonun konumunu haritada nereden hizalayacağı (x, y)
-                    popupAnchor: [0, -40] // Pop-up'ın ikonla hizalanma noktası (x, y)
-                });
-                // Konumu haritada işaretli bırak
-                L.marker(selectedLatLng, { icon: customIcon }).addTo(map)
-                    .bindPopup("You marked this location!")
-                    .openPopup();
-            } else {
-                alert('There was an error saving the location.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    try {
+        const data = await sendLocationToBackend(locationData);
+        if (data) {
+            updateUserLocations(locationData);
+            addMarkerToMap(selectedLatLng);
+        } else {
+            alert('There was an error saving the location.');
+        }
+    } catch (error) {
+        alert('Failed to save location. Please try again.');
+    }
 };

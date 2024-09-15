@@ -1,57 +1,55 @@
-
+// Menu toggle functionality
 function toggleMenu() {
     const menu = document.getElementById("mySidemenu");
     const body = document.body;
+    const isMenuOpen = menu.style.left === "0px";
 
-    if (menu.style.left === "0px") {
-        menu.style.left = "-250px";
-        body.style.marginLeft = "0";
-    } else {
-        menu.style.left = "0";
-        body.style.marginLeft = "250px"; // Sayfayı sağa kaydırma
-    }
+    menu.style.left = isMenuOpen ? "-250px" : "0";
+    body.style.marginLeft = isMenuOpen ? "0" : "250px";
 }
 
+// Friend search functionality
 function searchFriends() {
     const input = document.getElementById('friendSearchInput').value.toLowerCase();
     const resultsContainer = document.getElementById('friendSearchResults');
     const user = JSON.parse(localStorage.getItem('user'));
 
-    // Clear previous results
     resultsContainer.innerHTML = '';
 
-    if (input === '') {
-        return;
-    }
+    if (input === '') return;
 
-    const filteredFriends = user.friends.filter(friend => friend.toLowerCase().includes(input));
+    const filteredFriends = user.friends.filter(friend => 
+        friend.name.toLowerCase().includes(input)
+    );
 
     if (filteredFriends.length === 0) {
         resultsContainer.innerHTML = '<li>No friends found</li>';
         return;
     }
 
-    filteredFriends.forEach(friend => {
+    const createFriendListItem = (friend) => {
         const li = document.createElement('li');
-        li.textContent = friend.name; // Display the friend's name
-        li.addEventListener('click', function () {
-            focusOnFriend(friend); // Function to focus map on friend's location
-        });
-        resultsContainer.appendChild(li);
-    });
+        li.textContent = friend.name;
+        li.addEventListener('click', () => focusOnFriend(friend));
+        return li;
+    };
+
+    resultsContainer.append(...filteredFriends.map(createFriendListItem));
 }
 
+// Focus on friend's location
 function focusOnFriend(friend) {
     if (friend.lat && friend.lng) {
-        map.setView([friend.lat, friend.lng], 13); // Focus the map on the friend's location
-        L.marker([friend.lat, friend.lng], { icon: locationIcon }).addTo(map) // Use the location icon
+        map.setView([friend.lat, friend.lng], 13);
+        L.marker([friend.lat, friend.lng], { icon: locationIcon }).addTo(map)
             .bindPopup(`${friend.name} is here!`)
             .openPopup();
     }
 }
 
+// Main functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('Map script loaded'); // Kontrol amaçlı log
+    console.log('Map script loaded');
 
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
@@ -61,80 +59,88 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const user = JSON.parse(localStorage.getItem('user'));
 
-    initializeMap(); // Haritayı başlat
+    initializeMap();
+    initializeWebSocket(user.id);
 
-    initializeWebSocket(user.id); // WebSocket'i başlat
+    // Send user location every 10 seconds
+    setInterval(() => sendLocation(user), 10000);
 
-    // Kullanıcının konumunu her 10 saniyede bir göndermek için interval ayarla
-    setInterval(function () {
-        sendLocation(user);
-    }, 10000);
-
-    // Haritayı kullanıcının mevcut konumuna odakla ve başlangıçta bir konum gönder
+    // Initial location send
     sendLocation(user);
 
-    // WebSocket bağlantısını başlat ve user_id'yi URL parametresi olarak ekle
+    // Initialize WebSocket if not already connected
     if (!socket) {
         initializeWebSocket(user.id);
     }
 
-    // Kullanıcının mevcut konumunu al ve haritayı oraya odakla
+    // Get user's current location and focus map
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
-            map.setView([lat, lng], 13); // Konuma odaklan
-
-            var locationIcon = L.icon({
-                iconUrl: 'images/here_icon.png',
-                iconSize: [50, 50],
-                iconAnchor: [25, 50],
-                popupAnchor: [0, -50]
-            });
-
-            L.marker([lat, lng], { icon: locationIcon }).addTo(map)
-                .bindPopup("You are here!")
-                .openPopup();
-
-            // LocalStorage'dan diğer konumları alıp haritaya ekleme
-            addStoredLocationsToMap();
-
-        }, function () {
-            map.setView([51.505, -0.09], 13);
-            alert("Unable to retrieve your location. Default location set to London.");
-        });
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const { latitude: lat, longitude: lng } = position.coords;
+                focusMapOnLocation(lat, lng);
+                addUserMarker(lat, lng);
+                addStoredLocationsToMap();
+            },
+            () => {
+                map.setView([51.505, -0.09], 13);
+                alert("Unable to retrieve your location. Default location set to London.");
+            }
+        );
     } else {
         alert("Geolocation is not supported by your browser");
     }
 
-    // LocalStorage'dan konumları alıp haritaya ekleme fonksiyonu
-    function addStoredLocationsToMap() {
-        // LocalStorage'dan konum verilerini alın
-        const locations = JSON.parse(localStorage.getItem('user')).locations;
+    // Event Listeners
+    document.getElementById('logoutButton').addEventListener('click', handleLogout);
+    document.getElementById('createAreaButton').addEventListener('click', createArea);
+    document.getElementById('searchFriendsLink').addEventListener('click', toggleSearchFriends);
+    window.onclick = handleOutsideClick;
+});
 
-        if (locations && locations.length > 0) {
-            locations.forEach(function (location) {
-                var lat = location.latitude;
-                var lng = location.longitude;
+// Helper functions
+function focusMapOnLocation(lat, lng) {
+    map.setView([lat, lng], 13);
+}
 
-                var customIcon = L.icon({
-                    iconUrl: 'images/dest_icon.png', // Özel ikonun yolu
-                    iconSize: [40, 40], // İkon boyutu
-                    iconAnchor: [20, 40], // İkonun konumunu haritada nereden hizalayacağı (x, y)
-                    popupAnchor: [0, -40] // Pop-up'ın ikonla hizalanma noktası (x, y)
-                });
+function addUserMarker(lat, lng) {
+    const locationIcon = L.icon({
+        iconUrl: 'images/here_icon.png',
+        iconSize: [50, 50],
+        iconAnchor: [25, 50],
+        popupAnchor: [0, -50]
+    });
 
-                L.marker([lat, lng], { icon: customIcon }).addTo(map)
-                    .bindPopup(`Stored location: (${lat}, ${lng})`);
+    L.marker([lat, lng], { icon: locationIcon }).addTo(map)
+        .bindPopup("You are here!")
+        .openPopup();
+}
+
+function addStoredLocationsToMap() {
+    const locations = JSON.parse(localStorage.getItem('user')).locations;
+
+    if (locations && locations.length > 0) {
+        locations.forEach(location => {
+            const { latitude: lat, longitude: lng } = location;
+            const customIcon = L.icon({
+                iconUrl: 'images/dest_icon.png',
+                iconSize: [40, 40],
+                iconAnchor: [20, 40],
+                popupAnchor: [0, -40]
             });
-        }
+
+            L.marker([lat, lng], { icon: customIcon }).addTo(map)
+                .bindPopup(`Stored location: (${lat}, ${lng})`);
+        });
     }
+}
 
-    // Logout işlemi
-    document.getElementById('logoutButton').addEventListener('click', async function () {
-        const refreshToken = localStorage.getItem('refreshToken');
-        const url = `https://${domain}/api/logout`;
+async function handleLogout() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const url = `https://${domain}/api/logout`;
 
+    try {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -142,68 +148,56 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (response.ok) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            localStorage.removeItem('user');
+            ['accessToken', 'refreshToken', 'user'].forEach(item => localStorage.removeItem(item));
             window.location.href = 'login.html';
         } else {
-            alert('Logout failed!');
+            throw new Error('Logout failed');
         }
-    });
-
-    // Alan oluşturma fonksiyonu
-    document.getElementById('createAreaButton').addEventListener('click', function () {
-        const locations = JSON.parse(localStorage.getItem('user')).locations;
-
-        if (locations && locations.length > 2) { // Alan oluşturmak için en az 3 nokta gerekli
-            const points = locations.map(function (location) {
-                return [location.longitude, location.latitude]; // GeoJSON formatı (lng, lat)
-            });
-
-            const turfPoints = turf.points(points); // Turf.js kullanarak noktaları oluştur
-            const convexHull = turf.convex(turfPoints); // Dışbükey alanı oluştur
-
-            if (convexHull) {
-                // Leaflet polygon olarak dışbükey alanı çizme
-                const latlngs = convexHull.geometry.coordinates[0].map(function (coord) {
-                    return [coord[1], coord[0]]; // Leaflet formatı (lat, lng)
-                });
-
-                const polygon = L.polygon(latlngs, {
-                    color: 'blue',          // Sınır çizgisinin rengi
-                    weight: 4,              // Sınır çizgisinin kalınlığı
-                    opacity: 0.7,           // Sınır çizgisinin saydamlığı
-                    fillColor: 'yellow',    // Doldurma rengi
-                    fillOpacity: 0.5,       // Doldurma saydamlığı
-                    dashArray: '5, 5',      // Kesikli çizgi
-                    lineCap: 'round',       // Çizgi uçları yuvarlatılmış
-                    lineJoin: 'round',      // Çizgi köşeleri yuvarlatılmış
-                    className: 'custom-polygon' // Özel CSS sınıfı
-                }).addTo(map);
-
-                polygon.bindPopup("This is your selected area.");
-            } else {
-                alert('Unable to create a convex hull from the given points.');
-            }
-        } else {
-            alert('Creating an area requires at least 3 locations.');
-        }
-    });
-
-    document.getElementById('searchFriendsLink').addEventListener('click', function () {
-        const searchContainer = document.getElementById('searchFriendsContainer');
-        if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
-            searchContainer.style.display = 'block';
-        } else {
-            searchContainer.style.display = 'none';
-        }
-    });
-
-    // Close search when clicking outside
-    window.onclick = function (event) {
-        const searchContainer = document.getElementById('searchFriendsContainer');
-        if (event.target === searchContainer) {
-            searchContainer.style.display = 'none';
-        }
+    } catch (error) {
+        alert(error.message);
     }
-});
+}
+
+function createArea() {
+    const locations = JSON.parse(localStorage.getItem('user')).locations;
+
+    if (locations && locations.length > 2) {
+        const points = locations.map(location => [location.longitude, location.latitude]);
+        const turfPoints = turf.points(points);
+        const convexHull = turf.convex(turfPoints);
+
+        if (convexHull) {
+            const latlngs = convexHull.geometry.coordinates[0].map(coord => [coord[1], coord[0]]);
+
+            const polygon = L.polygon(latlngs, {
+                color: 'blue',
+                weight: 4,
+                opacity: 0.7,
+                fillColor: 'yellow',
+                fillOpacity: 0.5,
+                dashArray: '5, 5',
+                lineCap: 'round',
+                lineJoin: 'round',
+                className: 'custom-polygon'
+            }).addTo(map);
+
+            polygon.bindPopup("This is your selected area.");
+        } else {
+            alert('Unable to create a convex hull from the given points.');
+        }
+    } else {
+        alert('Creating an area requires at least 3 locations.');
+    }
+}
+
+function toggleSearchFriends() {
+    const searchContainer = document.getElementById('searchFriendsContainer');
+    searchContainer.style.display = searchContainer.style.display === 'none' || searchContainer.style.display === '' ? 'block' : 'none';
+}
+
+function handleOutsideClick(event) {
+    const searchContainer = document.getElementById('searchFriendsContainer');
+    if (event.target === searchContainer) {
+        searchContainer.style.display = 'none';
+    }
+}

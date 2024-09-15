@@ -1,64 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SVM - Home</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/map_point.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 
 <body>
-    <!-- Navbar içine buton ekleyelim -->
-    <div class="navbar">
-        <div class="brand">SVM</div>
-        <a href="index.html">Home</a>
-        <a href="javascript:void(0)" onclick="toggleMenu()">Menu</a>
-        <a id="createAreaButton">Create Area</a> <!-- Alan oluşturma butonu -->
-    </div>
+    <header>
+        <nav class="navbar">
+            <div class="brand">SVM</div>
+            <a href="index.html">Home</a>
+            <a href="#" onclick="toggleMenu()">Menu</a>
+            <a id="createAreaButton">Create Area</a>
+        </nav>
+    </header>
 
-    <!-- Modal -->
-    <div id="locationModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>Would you like to go here?</p>
-            <button id="confirmButton">Yes</button>
+    <main>
+        <div id="map-container">
+            <div id="map"></div>
         </div>
-    </div>
 
-    <!-- Sol Menü -->
-    <div id="mySidemenu" class="side-menu">
-        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
-        <a href="profile.html">Profile Settings</a>
-        <a href="javascript:void(0)" id="searchFriendsLink">Search Friends</a> <!-- Search Friends link -->
-        <a href="javascript:void(0)" id="logoutButton">Logout</a>
-    </div>
+        <aside id="mySidemenu" class="side-menu">
+            <a href="#" class="close-btn" onclick="toggleMenu()">&times;</a>
+            <a href="profile.html">Profile Settings</a>
+            <a href="#" id="searchFriendsLink">Search Friends</a>
+            <a href="#" id="logoutButton">Logout</a>
+        </aside>
 
-    <!-- Search Friends Section -->
-    <div id="searchFriendsContainer" class="search-friends-container" style="display: none;">
-        <input type="text" id="friendSearchInput" placeholder="Search Friends..." oninput="searchFriends()">
-        <ul id="friendSearchResults" class="search-results"></ul>
-    </div>
+        <div id="searchFriendsContainer" class="search-friends-container" style="display: none;">
+            <input type="text" id="friendSearchInput" placeholder="Search Friends..." oninput="searchFriends()">
+            <ul id="friendSearchResults" class="search-results"></ul>
+        </div>
 
-    <!-- Harita -->
-    <div id="map-container">
-        <div id="map"></div>
-    </div>
+        <div id="locationModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p>Would you like to go here?</p>
+                <button id="confirmButton">Yes</button>
+            </div>
+        </div>
+    </main>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>© 2024 SVM. All rights reserved.</p>
-    </div>
+    <footer class="footer">
+        <p>&copy; 2024 SVM. All rights reserved.</p>
+    </footer>
 
-    <!-- Scriptler -->
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <script src="js/map.js"></script>
     <script src="js/map_point.js"></script>
-    <script src="js/main.js">
-    </script>
+    <script src="js/main.js"></script>
 </body>
-
 </html>

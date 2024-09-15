@@ -1,3 +1,17 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: url('/images/background.png') no-repeat center center fixed;
+    /* Arka plan resmi */
+    background-size: cover;
+    /* Resmin tüm ekrana yayılmasını sağlar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .login-container {
     background-color: rgba(255, 255, 255, 0.8); /* Hafif saydam beyaz arka plan */
     padding: 50px;
